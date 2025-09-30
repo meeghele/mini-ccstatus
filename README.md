@@ -9,9 +9,26 @@ A fast/minimal C implementation of the statusline for Claude Code CLI.
 
 ## Build & Test
 
+### Prerequisites
+
+Install build tools:
+
+**Debian/Ubuntu:**
+```bash
+sudo apt-get install build-essential
+```
+
+**Fedora:**
+```bash
+sudo dnf install gcc make
+```
+
+### Building
+
 GNU Make will build a binary into `./bin/mini-ccstatus`.`
 
 ```bash
+# Builds the binary and prints the statusLine
 make
 
 # Prints the statusline
@@ -22,6 +39,12 @@ make test
 
 # Clean bin/ and obj/
 make clean
+```
+
+Otherwise:
+
+```bash
+make all
 ```
 
 ## Usage
