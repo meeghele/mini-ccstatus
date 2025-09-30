@@ -1,0 +1,1 @@
+{"hook_event_name": "Status", "model": {"id": "test-4", "display_name": "Test4"}, "cwd": "nopath", "workspace": {"project_dir": "relative"}, "version": "1.0", "cost": {}, "exceeds_200k_tokens": false}

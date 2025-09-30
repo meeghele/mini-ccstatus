@@ -1,0 +1,40 @@
+{
+  "hook_event_name": "Status",
+  "session_id": "first",
+  "cwd": "/first/dir",
+  "model": {
+    "id": "claude-sonnet-3-5",
+    "display_name": "Sonnet 3.5"
+  },
+  "workspace": {
+    "project_dir": "/first/project"
+  },
+  "version": "1.0.1",
+  "cost": {
+    "total_cost_usd": 0.001,
+    "total_duration_ms": 1000,
+    "total_api_duration_ms": 500,
+    "total_lines_added": 10,
+    "total_lines_removed": 5
+  }
+}
+{
+  "hook_event_name": "Status",
+  "session_id": "second",
+  "cwd": "/second/dir",
+  "model": {
+    "id": "claude-opus-4-1",
+    "display_name": "Opus"
+  },
+  "workspace": {
+    "project_dir": "/second/project"
+  },
+  "version": "1.0.2",
+  "cost": {
+    "total_cost_usd": 0.002,
+    "total_duration_ms": 2000,
+    "total_api_duration_ms": 1000,
+    "total_lines_added": 20,
+    "total_lines_removed": 10
+  }
+}

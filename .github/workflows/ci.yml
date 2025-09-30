@@ -1,0 +1,73 @@
+name: mini-ccstatus-ci
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - feat/**
+      - chore/**
+      - fix/**
+  pull_request:
+    branches:
+      - main
+      - develop
+      - feat/**
+      - chore/**
+      - fix/**
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: test on debian:lts
+    runs-on: ubuntu-latest
+    container: debian:stable
+
+    steps:
+    - name: checkout code
+      uses: actions/checkout@v4
+
+    - name: install dependencies
+      shell: sh
+      run: |
+        if command -v apt-get >/dev/null 2>&1; then
+          apt-get update
+          apt-get install -y build-essential git make
+        fi
+        echo "All dependencies installed successfully"
+
+    - name: build project
+      shell: sh
+      run: |
+        echo "Building project..."
+        make default
+        echo "✅ Build completed successfully"
+
+    - name: run tests
+      shell: sh
+      run: |
+        echo "Running tests..."
+        make test
+        echo "✅ Tests completed successfully"
+
+    - name: clean build
+      shell: sh
+      run: |
+        echo "Testing clean target..."
+        make clean
+        echo "✅ Clean completed successfully"
+
+    - name: full build cycle
+      shell: sh
+      run: |
+        echo "Running full build cycle (clean, build, test)..."
+        make all
+        echo "✅ Full build cycle completed successfully"
+
+    - name: test summary
+      shell: sh
+      run: |
+        echo "🎉 All checks passed"
+        echo "- Build successful"
+        echo "- All tests passing"
+        echo "- Clean target working"

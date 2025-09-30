@@ -1,0 +1,1 @@
+{"hook_event_name": "Status", "model": {"id": "test-3", "display_name": "Test3"}, "cwd": "/path/with/trailing///", "workspace": {"project_dir": "/multiple///slashes///"}, "version": "1.0", "cost": {}, "exceeds_200k_tokens": false}
