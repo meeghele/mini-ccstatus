@@ -35,12 +35,12 @@ Install build tools:
 
 **Debian/Ubuntu:**
 ```bash
-sudo apt-get install build-essential
+sudo apt-get install build-essential valgrind
 ```
 
 **Fedora:**
 ```bash
-sudo dnf install gcc make
+sudo dnf install gcc make valgrind
 ```
 
 ### Building
