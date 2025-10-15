@@ -37,6 +37,9 @@ make demo
 # Run the shell-based regression tests
 make test
 
+# Run memory checks
+make valgrind
+
 # Clean bin/ and obj/
 make clean
 ```
