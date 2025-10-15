@@ -1,0 +1,14 @@
+# Benchmark configurations
+# Format: name|author|stack|url|command|type
+# type: direct = execute directly, python = use PYTHON interpreter, node = use NODE interpreter
+
+mini-ccstatus|meeghele|C|github.com/meeghele/mini-ccstatus|../bin/mini-ccstatus|direct
+simple-statusline.sh|Anthropic|Bash, jq|docs.claude.com/en/docs/claude-code/statusline#simple-status-line|examples/simple-statusline.sh|direct
+git-aware-statusline.sh|Anthropic|Bash, jq, Git|docs.claude.com/en/docs/claude-code/statusline#git-aware-status-line|examples/git-aware-statusline.sh|direct
+python-example.py|Anthropic|Python|docs.claude.com/en/docs/claude-code/statusline#python-example|examples/python-example.py|python
+nodejs-example.js|Anthropic|Node.js|docs.claude.com/en/docs/claude-code/statusline#node-js-example|examples/nodejs-example.js|node
+helper-function-statusline.sh|Anthropic|Bash, jq|docs.claude.com/en/docs/claude-code/statusline#helper-function-approach|examples/helper-function-statusline.sh|direct
+claude-powerline|Owloops|Node.js|github.com/Owloops/claude-powerline|node_modules/.bin/claude-powerline --style=powerline|direct
+ccstatusline|sirmalloc|Node.js|github.com/sirmalloc/ccstatusline|node_modules/.bin/ccstatusline|direct
+ccusage|ryoppippi|Node.js|github.com/ryoppippi/ccusage|node_modules/.bin/ccusage|direct
+claude-statusline-powerline|spences10|Node.js|github.com/spences10/claude-statusline-powerline|node_modules/.bin/claude-statusline-powerline|direct

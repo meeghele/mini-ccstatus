@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "@owloops/claude-powerline": "^1.9.15",
+    "ccstatusline": "^2.0.21",
+    "ccusage": "^0.3.2",
+    "claude-statusline-powerline": "^0.0.19"
+  }
+}
