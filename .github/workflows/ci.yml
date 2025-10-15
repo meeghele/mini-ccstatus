@@ -32,7 +32,7 @@ jobs:
       run: |
         if command -v apt-get >/dev/null 2>&1; then
           apt-get update
-          apt-get install -y build-essential git make
+          apt-get install -y build-essential git make valgrind
         fi
         echo "All dependencies installed successfully"
 
@@ -49,6 +49,13 @@ jobs:
         echo "Running tests..."
         make test
         echo "✅ Tests completed successfully"
+
+    - name: run valgrind memory leak tests
+      shell: sh
+      run: |
+        echo "Running valgrind memory leak tests..."
+        make valgrind
+        echo "✅ Valgrind tests completed - no memory leaks detected"
 
     - name: clean build
       shell: sh
@@ -70,4 +77,5 @@ jobs:
         echo "🎉 All checks passed"
         echo "- Build successful"
         echo "- All tests passing"
+        echo "- Valgrind memory leak tests passing"
         echo "- Clean target working"
