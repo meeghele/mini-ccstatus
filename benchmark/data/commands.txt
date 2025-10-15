@@ -2,7 +2,7 @@
 # Format: name|author|stack|url|command|type
 # type: direct = execute directly, python = use PYTHON interpreter, node = use NODE interpreter
 
-mini-ccstatus|meeghele|C|github.com/meeghele/mini-ccstatus|../bin/mini-ccstatus|direct
+mini-ccstatus|meeghele|C, cJson|github.com/meeghele/mini-ccstatus|../bin/mini-ccstatus|direct
 simple-statusline.sh|Anthropic|Bash, jq|docs.claude.com/en/docs/claude-code/statusline#simple-status-line|examples/simple-statusline.sh|direct
 git-aware-statusline.sh|Anthropic|Bash, jq, Git|docs.claude.com/en/docs/claude-code/statusline#git-aware-status-line|examples/git-aware-statusline.sh|direct
 python-example.py|Anthropic|Python|docs.claude.com/en/docs/claude-code/statusline#python-example|examples/python-example.py|python
