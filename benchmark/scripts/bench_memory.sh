@@ -2,7 +2,7 @@
 # Copyright (c) 2025 Michele Tavella <meeghele@proton.me>
 
 # Memory benchmarking for mini-ccstatus and alternatives
-# Run ./install-bench-tools.sh first to install dependencies
+# Run ./install.sh first to install dependencies
 
 # Configuration
 RUNS=250
@@ -17,7 +17,7 @@ NODE="${NODE:-$(mise which node 2>/dev/null || which node)}"
 
 # Check dependencies
 if ! command -v /usr/bin/time &> /dev/null; then
-    echo "Error: GNU time not found. Run ./install-bench-tools.sh first."
+    echo "Error: GNU time not found. Run ./install.sh first."
     exit 1
 fi
 
@@ -37,7 +37,8 @@ bench_memory() {
 
     for i in $(seq 1 $RUNS); do
         # Execute command using eval to properly handle arguments, with stdin redirection
-        output=$(/usr/bin/time -f "%M" bash -c "$cmd_string" < "$INPUT_FILE" 2>&1 >/dev/null)
+        # Capture only the last line which contains the time output (handles commands that print to stderr)
+        output=$(/usr/bin/time -f "%M" bash -c "$cmd_string" < "$INPUT_FILE" 2>&1 >/dev/null | tail -1)
         total_maxrss=$((total_maxrss + output))
     done
 

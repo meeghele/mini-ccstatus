@@ -2,11 +2,12 @@
 
 This benchmark provides a performance comparison of different Claude Code status line implementations against [mini-ccstatus](https://github.com/meeghele/mini-ccstatus).
 
-**Last Updated:** 2025-10-15 13:23:18 CEST
+
+**Last Updated:** 2025-10-15 17:30:33 CEST
 
 ## Implementations
 
-- [**mini-ccstatus**](https://github.com/meeghele/mini-ccstatus) (@meeghele) - C, cJson
+- [**mini-ccstatus**](https://github.com/meeghele/mini-ccstatus) (@meeghele) - C, cJSON
 - [**simple-statusline.sh**](https://docs.claude.com/en/docs/claude-code/statusline#simple-status-line) (@Anthropic) - Bash, jq
 - [**git-aware-statusline.sh**](https://docs.claude.com/en/docs/claude-code/statusline#git-aware-status-line) (@Anthropic) - Bash, jq, Git
 - [**python-example.py**](https://docs.claude.com/en/docs/claude-code/statusline#python-example) (@Anthropic) - Python
@@ -21,29 +22,31 @@ This benchmark provides a performance comparison of different Claude Code status
 
 | Implementation | Author | Stack | Avg | Min | Max | vs Baseline (Avg) |
 |----------------|--------|-------|-----|-----|-----|-------------------|
-| mini-ccstatus | meeghele | C, cJson | 483.8 µs | 284.9 µs | 821.0 µs | **baseline** |
-| simple-statusline.sh | Anthropic | Bash, jq | 6.4 ms | 5.5 ms | 7.1 ms | **13.2x** |
-| git-aware-statusline.sh | Anthropic | Bash, jq, Git | 9.5 ms | 8.5 ms | 10.8 ms | **19.6x** |
-| python-example.py | Anthropic | Python | 13.0 ms | 10.7 ms | 18.5 ms | **26.9x** |
-| nodejs-example.js | Anthropic | Node.js | 16.7 ms | 14.4 ms | 24.2 ms | **34.5x** |
-| helper-function-statusline.sh | Anthropic | Bash, jq | 6.6 ms | 5.7 ms | 7.4 ms | **13.6x** |
-| claude-powerline | Owloops | Node.js | 40.0 ms | 35.0 ms | 54.6 ms | **82.7x** |
-| ccstatusline | sirmalloc | Node.js | 152.1 ms | 141.0 ms | 206.6 ms | **314.4x** |
-| ccusage | ryoppippi | Node.js | 410.8 ms | 381.3 ms | 496.0 ms | **849.1x** |
-| claude-statusline-powerline | spences10 | Node.js | 31.3 ms | 28.2 ms | 43.3 ms | **64.7x** |
+| mini-ccstatus | meeghele | C, cJSON | 446.5 µs | 272.4 µs | 900.9 µs | **baseline** |
+| simple-statusline.sh | Anthropic | Bash, jq | 6.3 ms | 5.3 ms | 7.4 ms | **14.1x** |
+| helper-function-statusline.sh | Anthropic | Bash, jq | 6.4 ms | 5.6 ms | 7.0 ms | **14.3x** |
+| git-aware-statusline.sh | Anthropic | Bash, jq, Git | 9.3 ms | 8.2 ms | 11.2 ms | **20.8x** |
+| python-example.py | Anthropic | Python | 12.8 ms | 11.1 ms | 17.5 ms | **28.7x** |
+| nodejs-example.js | Anthropic | Node.js | 17.0 ms | 14.7 ms | 23.2 ms | **38.1x** |
+| claude-statusline-powerline | spences10 | Node.js | 31.5 ms | 28.5 ms | 37.4 ms | **70.5x** |
+| claude-powerline | Owloops | Node.js | 41.3 ms | 36.8 ms | 46.5 ms | **92.5x** |
+| ccstatusline | sirmalloc | Node.js | 155.7 ms | 145.2 ms | 172.0 ms | **348.7x** |
+| ccusage | ryoppippi | Node.js | 429.6 ms | 402.9 ms | 684.1 ms | **962.2x** |
 
 ## Memory Usage
 
 | Implementation | Author | Stack | Avg KB | Avg MB | vs Baseline |
 |----------------|--------|-------|--------|--------|-------------|
-| mini-ccstatus | meeghele | C, cJson | 3602 | 3 | **baseline** |
-| simple-statusline.sh | Anthropic | Bash, jq | 3663 | 3 | **1.0x** |
-| git-aware-statusline.sh | Anthropic | Bash, jq, Git | 4606 | 4 | **1.3x** |
-| python-example.py | Anthropic | Python | 13314 | 13 | **3.7x** |
-| nodejs-example.js | Anthropic | Node.js | 46658 | 45 | **13.0x** |
-| helper-function-statusline.sh | Anthropic | Bash, jq | 3661 | 3 | **1.0x** |
-| claude-powerline | Owloops | Node.js | 60398 | 58 | **16.8x** |
-| ccstatusline | sirmalloc | Node.js | 85796 | 83 | **23.8x** |
+| mini-ccstatus | meeghele | C, cJSON | 3565 | 3 | **baseline** |
+| simple-statusline.sh | Anthropic | Bash, jq | 3614 | 3 | **1.0x** |
+| helper-function-statusline.sh | Anthropic | Bash, jq | 3623 | 3 | **1.0x** |
+| git-aware-statusline.sh | Anthropic | Bash, jq, Git | 4629 | 4 | **1.3x** |
+| python-example.py | Anthropic | Python | 12846 | 12 | **3.6x** |
+| nodejs-example.js | Anthropic | Node.js | 45745 | 44 | **12.8x** |
+| claude-statusline-powerline | spences10 | Node.js | 55055 | 53 | **15.4x** |
+| claude-powerline | Owloops | Node.js | 59151 | 57 | **16.6x** |
+| ccstatusline | sirmalloc | Node.js | 84330 | 82 | **23.7x** |
+| ccusage | ryoppippi | Node.js | 123533 | 120 | **34.7x** |
 
 ## Configuration
 

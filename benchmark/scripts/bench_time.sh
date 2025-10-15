@@ -2,7 +2,7 @@
 # Copyright (c) 2025 Michele Tavella <meeghele@proton.me>
 
 # Time benchmarking for mini-ccstatus and alternatives
-# Run ./install-bench-tools.sh first to install dependencies
+# Run ./install.sh first to install dependencies
 
 # Configuration
 WARMUP=10
@@ -18,7 +18,7 @@ NODE="${NODE:-$(mise which node 2>/dev/null || which node)}"
 
 # Check dependencies
 if ! command -v hyperfine &> /dev/null; then
-    echo "Error: hyperfine not found. Run ./install-bench-tools.sh first."
+    echo "Error: hyperfine not found. Run ./install.sh first."
     exit 1
 fi
 
