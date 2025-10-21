@@ -82,6 +82,24 @@ make all
 ### Verbose Mode
 ![Verbose Mode](docs/mini-ccstatus_verbose.png)
 
+## Benchmarks
+
+See [`benchmark/`](benchmark/) for performance comparison against other Claude Code statusline implementations, including:
+- Anthropic's reference examples (Bash, Python, Node.js)
+- Community implementations 
+
+**Quick start:**
+
+```bash
+cd benchmark
+./scripts/install.sh       # Install dependencies (hyperfine, jq, npm packages)
+make time                  # Run time benchmarks
+make memory                # Run memory benchmarks
+make report                # Generate full benchmark report
+```
+
+For detailed documentation, see [`benchmark/README.md`](benchmark/README.md).
+
 ## Dependencies
 
 This project includes [cJSON](https://github.com/DaveGamble/cJSON) (MIT License) vendored in `lib/cjson/`.

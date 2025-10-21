@@ -1,0 +1,13 @@
+# Benchmark configurations
+# Format: name|author|stack|url|command|type
+# type: direct = execute directly, python = use PYTHON interpreter, node = use NODE interpreter
+
+# mini-ccstatus: baseline implementation
+mini-ccstatus|meeghele|C, cJSON|github.com/meeghele/mini-ccstatus|../bin/mini-ccstatus|direct
+
+# Reference implementations from Anthropic docs
+simple-statusline.sh|Anthropic|Bash, jq|docs.claude.com/en/docs/claude-code/statusline#simple-status-line|examples/simple-statusline.sh|direct
+helper-function-statusline.sh|Anthropic|Bash, jq|docs.claude.com/en/docs/claude-code/statusline#helper-function-approach|examples/helper-function-statusline.sh|direct
+git-aware-statusline.sh|Anthropic|Bash, jq, Git|docs.claude.com/en/docs/claude-code/statusline#git-aware-status-line|examples/git-aware-statusline.sh|direct
+python-example.py|Anthropic|Python|docs.claude.com/en/docs/claude-code/statusline#python-example|examples/python-example.py|python
+nodejs-example.js|Anthropic|Node.js|docs.claude.com/en/docs/claude-code/statusline#node-js-example|examples/nodejs-example.js|node
