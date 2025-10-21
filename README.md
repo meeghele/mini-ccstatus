@@ -15,12 +15,12 @@ Install build tools:
 
 **Debian/Ubuntu:**
 ```bash
-sudo apt-get install build-essential
+sudo apt-get install build-essential valgrind
 ```
 
 **Fedora:**
 ```bash
-sudo dnf install gcc make
+sudo dnf install gcc make valgrind
 ```
 
 ### Building
@@ -36,6 +36,9 @@ make demo
 
 # Run the shell-based regression tests
 make test
+
+# Run memory checks
+make valgrind
 
 # Clean bin/ and obj/
 make clean
