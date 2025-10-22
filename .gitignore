@@ -1,3 +1,4 @@
 obj/
 obj-debug/
 bin/
+benchmark/REPORT.md

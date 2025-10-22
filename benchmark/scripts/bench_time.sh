@@ -46,10 +46,10 @@ bench_time() {
     # Export JSON if JSON_OUTPUT_DIR is set
     if [[ -n "$JSON_OUTPUT_DIR" ]]; then
         local json_file="$JSON_OUTPUT_DIR/bench_${bench_index}.json"
-        hyperfine -w "$WARMUP" -m "$RUNS" --prepare 'sync' -N --input "$INPUT_FILE" \
+        hyperfine -w "$WARMUP" --runs "$RUNS" --prepare 'sync' -N --input "$INPUT_FILE" \
             --export-json "$json_file" "$cmd"
     else
-        hyperfine -w "$WARMUP" -m "$RUNS" --prepare 'sync' -N --input "$INPUT_FILE" "$cmd"
+        hyperfine -w "$WARMUP" --runs "$RUNS" --prepare 'sync' -N --input "$INPUT_FILE" "$cmd"
     fi
     echo ""
 }

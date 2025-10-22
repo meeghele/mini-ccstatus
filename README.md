@@ -25,29 +25,12 @@ sudo dnf install gcc make valgrind
 
 ### Building
 
-GNU Make will build a binary into `./bin/mini-ccstatus`.`
-
 ```bash
-# Builds the binary and prints the statusLine
-make
-
-# Prints the statusline
-make demo
-
-# Run the shell-based regression tests
-make test
-
-# Run memory checks
-make valgrind
-
-# Clean bin/ and obj/
-make clean
-```
-
-Otherwise:
-
-```bash
-make all
+make                       # Build binary and run demo
+make all                   # Build, test, and run valgrind checks
+make test                  # Run regression tests
+make valgrind              # Run memory checks
+make clean                 # Clean bin/ and obj/
 ```
 
 ## Usage
@@ -92,10 +75,10 @@ See [`benchmark/`](benchmark/) for performance comparison against other Claude C
 
 ```bash
 cd benchmark
-./scripts/install.sh       # Install dependencies (hyperfine, jq, npm packages)
 make time                  # Run time benchmarks
+make cycles                # Run CPU cycles benchmarks
 make memory                # Run memory benchmarks
-make report                # Generate full benchmark report
+make results               # Generate full benchmark report
 ```
 
 For detailed documentation, see [`benchmark/README.md`](benchmark/README.md).

@@ -8,6 +8,7 @@ PYTHON ?= $(shell mise which python3 2>/dev/null || which python3)
 NODE ?= $(shell mise which node 2>/dev/null || which node)
 
 BENCH_TIME     := scripts/bench_time.sh
+BENCH_CYCLES   := scripts/bench_cycles.sh
 BENCH_MEMORY   := scripts/bench_memory.sh
 REPORT_SCRIPT  := scripts/generate_report.sh
 RESULTS_FILE   := README.md
@@ -16,7 +17,7 @@ export PYTHON
 export NODE
 
 .PHONY: default
-default: time memory
+default: time cycles memory
 
 .PHONY: all
 all: default
@@ -28,6 +29,11 @@ results: generate_report
 time: $(BENCH_TIME)
 	@echo "Running time benchmarks..."
 	@$(BENCH_TIME) 10
+
+.PHONY: cycles
+cycles: $(BENCH_CYCLES)
+	@echo "Running CPU cycles benchmarks..."
+	@$(BENCH_CYCLES) 10
 
 .PHONY: memory
 memory: $(BENCH_MEMORY)

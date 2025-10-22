@@ -1,6 +1,6 @@
 # Benchmark configurations
 # Format: name|author|stack|url|command|type
-# type: direct = execute directly, python = use PYTHON interpreter, node = use NODE interpreter
+# type: direct = execute from local repo, python/node = use selected interpreter, system = rely on PATH
 
 # mini-ccstatus: baseline implementation
 mini-ccstatus|meeghele|C, cJSON|github.com/meeghele/mini-ccstatus|../bin/mini-ccstatus|direct

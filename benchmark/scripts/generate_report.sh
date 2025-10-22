@@ -9,9 +9,10 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 BENCHMARK_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 RUNS="${1:-250}"
-OUTPUT_FILE="${2:-$BENCHMARK_DIR/README.md}"
+OUTPUT_FILE="${2:-$BENCHMARK_DIR/REPORT.md}"
 TEMP_DIR=$(mktemp -d)
 TIME_OUTPUT="$TEMP_DIR/time_output.txt"
+CYCLES_OUTPUT="$TEMP_DIR/cycles_output.txt"
 MEMORY_OUTPUT="$TEMP_DIR/memory_output.txt"
 JSON_OUTPUT_DIR="$TEMP_DIR/json"
 mkdir -p "$JSON_OUTPUT_DIR"
@@ -29,6 +30,10 @@ echo ""
 echo "Running time benchmarks..."
 JSON_OUTPUT_DIR="$JSON_OUTPUT_DIR" "$SCRIPT_DIR/bench_time.sh" "$RUNS" > "$TIME_OUTPUT" 2>&1
 
+# Run cycles benchmark
+echo "Running CPU cycles benchmarks..."
+JSON_OUTPUT_DIR="$JSON_OUTPUT_DIR" "$SCRIPT_DIR/bench_cycles.sh" "$RUNS" > "$CYCLES_OUTPUT" 2>&1
+
 # Run memory benchmark
 echo "Running memory benchmarks..."
 "$SCRIPT_DIR/bench_memory.sh" "$RUNS" > "$MEMORY_OUTPUT" 2>&1
@@ -41,6 +46,9 @@ grep "Benchmarking (no shell):" "$TIME_OUTPUT" | wc -l
 echo ""
 echo "Debug: Checking for all test names in memory output:"
 grep "Benchmarking (no shell):" "$MEMORY_OUTPUT" | wc -l
+echo ""
+echo "Debug: Checking for all test names in cycles output:"
+grep "Benchmarking (perf stat):" "$CYCLES_OUTPUT" | wc -l
 echo ""
 
 # Generate the markdown report
@@ -68,6 +76,10 @@ while IFS='|' read -r name author stack url command type; do
     fi
 done < "$BENCHMARK_DIR/data/commands.txt"
 
+echo "" >> "$OUTPUT_FILE"
+
+# Add note about third-party tools
+echo "**Note:** Unlike the reference implementations that only process JSON from stdin, \`ccusage\` and \`ccstatusline\` also read configuration files from \`\$HOME/.claude\` and may make API calls. The performance measurements for these tools reflect their full behavior and may vary depending on your system configuration, network latency, and Claude API response times." >> "$OUTPUT_FILE"
 echo "" >> "$OUTPUT_FILE"
 
 # Parse time benchmark results
@@ -99,11 +111,6 @@ while IFS='|' read -r name author stack url command type; do
     min_s=$(jq -r '.results[0].min' "$json_file")
     max_s=$(jq -r '.results[0].max' "$json_file")
 
-    # Store baseline (mini-ccstatus) for comparison
-    if [[ "$name" == "mini-ccstatus" ]]; then
-        baseline_time_s="$mean_s"
-    fi
-
     # Store result for second pass
     results+=("$name|$author|$stack|$url|$mean_s|$min_s|$max_s")
 
@@ -111,6 +118,7 @@ while IFS='|' read -r name author stack url command type; do
 done < "$BENCHMARK_DIR/data/commands.txt"
 
 # Second pass: format output with baseline comparison
+first_time_entry=true
 for result in "${results[@]}"; do
     IFS='|' read -r name author stack url mean_s min_s max_s <<< "$result"
 
@@ -132,14 +140,18 @@ for result in "${results[@]}"; do
     }')
 
     # Calculate ratio vs baseline
-    if [[ -n "$baseline_time_s" && "$baseline_time_s" != "0" ]]; then
+    if $first_time_entry; then
+        baseline_time_s="$mean_s"
+        relative="**baseline**"
+        first_time_entry=false
+    elif [[ -n "$baseline_time_s" && "$baseline_time_s" != "0" ]]; then
         relative=$(awk -v current="$mean_s" -v baseline="$baseline_time_s" 'BEGIN {
-            ratio = current / baseline
-            if (ratio < 1.01) {
-                print "**baseline**"
-            } else {
-                printf "**%.1fx**", ratio
+            if (baseline == 0) {
+                print "-"
+                exit
             }
+            ratio = current / baseline
+            printf "**%.1fx**", ratio
         }')
     else
         relative="-"
@@ -147,12 +159,86 @@ for result in "${results[@]}"; do
 
     # Format name as link if URL exists
     if [[ "$url" != "-" && -n "$url" ]]; then
-        name_formatted="[**$name**](https://$url)"
+        name_formatted="[$name](https://$url)"
     else
-        name_formatted="**$name**"
+        name_formatted="$name"
     fi
 
     echo "| $name_formatted | $author | $stack | $mean_formatted | $min_formatted | $max_formatted | $relative |" >> "$OUTPUT_FILE"
+done
+
+echo "" >> "$OUTPUT_FILE"
+
+# Parse CPU cycles benchmark results
+echo "## CPU Cycles" >> "$OUTPUT_FILE"
+echo "" >> "$OUTPUT_FILE"
+echo "| Implementation | Author | Stack | Cycles | Instructions | IPC | Cache Miss Rate | vs Baseline (Cycles) |" >> "$OUTPUT_FILE"
+echo "|----------------|--------|-------|--------|--------------|-----|-----------------|----------------------|" >> "$OUTPUT_FILE"
+
+# Extract cycles results from JSON files
+bench_index=0
+declare -a cycles_results
+baseline_cycles=""
+
+while IFS='|' read -r name author stack url command type; do
+    # Skip comments and empty lines
+    [[ "$name" =~ ^#.*$ || -z "$name" ]] && continue
+
+    json_file="$JSON_OUTPUT_DIR/cycles_${bench_index}.json"
+
+    if [[ ! -f "$json_file" ]]; then
+        echo "Warning: Missing cycles JSON file for $name" >&2
+        bench_index=$((bench_index + 1))
+        continue
+    fi
+
+    # Extract cycles data from JSON
+    cycles=$(jq -r '.cycles' "$json_file")
+    instructions=$(jq -r '.instructions' "$json_file")
+    ipc=$(jq -r '.ipc' "$json_file")
+    cache_miss_rate=$(jq -r '.cache_miss_rate' "$json_file")
+
+    # Store result for second pass
+    cycles_results+=("$name|$author|$stack|$url|$cycles|$instructions|$ipc|$cache_miss_rate")
+
+    bench_index=$((bench_index + 1))
+done < "$BENCHMARK_DIR/data/commands.txt"
+
+# Second pass: format output with baseline comparison
+first_cycle_entry=true
+for result in "${cycles_results[@]}"; do
+    IFS='|' read -r name author stack url cycles instructions ipc cache_miss_rate <<< "$result"
+
+    # Format cycles with thousands separator
+    cycles_formatted=$(printf "%'d" "$cycles" 2>/dev/null || echo "$cycles")
+    instructions_formatted=$(printf "%'d" "$instructions" 2>/dev/null || echo "$instructions")
+
+    # Calculate ratio vs baseline
+    if $first_cycle_entry; then
+        baseline_cycles="$cycles"
+        relative="**baseline**"
+        first_cycle_entry=false
+    elif [[ -n "$baseline_cycles" && "$baseline_cycles" != "0" ]]; then
+        relative=$(awk -v current="$cycles" -v baseline="$baseline_cycles" 'BEGIN {
+            if (baseline == 0) {
+                print "-"
+                exit
+            }
+            ratio = current / baseline
+            printf "**%.1fx**", ratio
+        }')
+    else
+        relative="-"
+    fi
+
+    # Format name as link if URL exists
+    if [[ "$url" != "-" && -n "$url" ]]; then
+        name_formatted="[$name](https://$url)"
+    else
+        name_formatted="$name"
+    fi
+
+    echo "| $name_formatted | $author | $stack | $cycles_formatted | $instructions_formatted | $ipc | $cache_miss_rate | $relative |" >> "$OUTPUT_FILE"
 done
 
 echo "" >> "$OUTPUT_FILE"
@@ -165,10 +251,13 @@ echo "|----------------|--------|-------|--------|--------|-------------|" >> "$
 
 # Extract memory results
 awk '
+BEGIN {
+    row_index = 0
+    baseline_mem_kb = 0
+}
 function format_ratio(current, baseline) {
     if (baseline == 0) return "-"
     ratio = current / baseline
-    if (ratio < 1.01) return "**baseline**"
     return sprintf("**%.1fx**", ratio)
 }
 
@@ -178,7 +267,8 @@ function format_ratio(current, baseline) {
 
     # Parse "name (@author, stack, url)" format
     # Stack may contain commas, so we parse step by step
-    if (match(full_impl, /^([^(]+) \(@(.+)\)$/, arr)) {
+    # Match everything up to the last " (@" to handle names with parentheses
+    if (match(full_impl, /^(.+) \(@(.+)\)$/, arr)) {
         impl = arr[1]
         gsub(/^ +| +$/, "", impl)  # trim whitespace
 
@@ -227,13 +317,12 @@ function format_ratio(current, baseline) {
         gsub(/\(/, "", mb)
         gsub(/\)/, "", mb)
 
-        # Store baseline (mini-ccstatus) value
-        if (impl == "mini-ccstatus") {
+        # Track baseline row (first entry)
+        row_index++
+        if (row_index == 1) {
             baseline_mem_kb = kb
-        }
-
-        # Calculate relative memory usage
-        if (baseline_mem_kb > 0) {
+            relative = "**baseline**"
+        } else if (baseline_mem_kb > 0) {
             relative = format_ratio(kb, baseline_mem_kb)
         } else {
             relative = "pending"
@@ -241,9 +330,9 @@ function format_ratio(current, baseline) {
 
         # Format impl as link if URL exists
         if (url != "" && url != "-") {
-            impl_formatted = sprintf("[**%s**](https://%s)", impl, url)
+            impl_formatted = sprintf("[%s](https://%s)", impl, url)
         } else {
-            impl_formatted = sprintf("**%s**", impl)
+            impl_formatted = sprintf("%s", impl)
         }
 
         printf "| %s | %s | %s | %s | %s | %s |\n", impl_formatted, author, stack, kb, mb, relative
@@ -257,6 +346,7 @@ echo "" >> "$OUTPUT_FILE"
 echo "## Configuration" >> "$OUTPUT_FILE"
 echo "" >> "$OUTPUT_FILE"
 echo "- **Time Benchmark:** $(grep -oP 'warmup=\d+, runs=\d+' "$TIME_OUTPUT")" >> "$OUTPUT_FILE"
+echo "- **CPU Cycles Benchmark:** $(grep -oP 'runs=\d+' "$CYCLES_OUTPUT")" >> "$OUTPUT_FILE"
 echo "- **Memory Benchmark:** $(grep -oP 'runs=\d+' "$MEMORY_OUTPUT")" >> "$OUTPUT_FILE"
 echo "- **System:** $(uname -s) $(uname -r)" >> "$OUTPUT_FILE"
 echo "- **CPU:** $(grep "model name" /proc/cpuinfo | head -1 | cut -d: -f2 | xargs)" >> "$OUTPUT_FILE"
