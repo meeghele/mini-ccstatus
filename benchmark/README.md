@@ -37,7 +37,6 @@ Until Claude Code adopts a persistent-process approach, this benchmark measures 
 - [**python-example.py**](https://docs.claude.com/en/docs/claude-code/statusline#python-example) (@Anthropic) - Python
 - [**nodejs-example.js**](https://docs.claude.com/en/docs/claude-code/statusline#node-js-example) (@Anthropic) - Node.js
 - [**ccstatusline**](https://github.com/sirmalloc/ccstatusline) (@sirmalloc) - Node.js
-- [**ccusage statusline --offline**](https://github.com/ryoppippi/ccusage) (@ryoppippi) - Node.js
 - [**ccusage statusline**](https://github.com/ryoppippi/ccusage) (@ryoppippi) - Node.js
 
 **Note:** Unlike the reference implementations `mini-ccstatus` that only process JSON from stdin, `mini-ccstatus --all`, `ccusage` and `ccstatusline` also read configuration files from `$HOME/.claude`.
