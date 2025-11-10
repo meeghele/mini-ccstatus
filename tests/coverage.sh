@@ -23,17 +23,17 @@ YELLOW='\033[0;33m'
 NC='\033[0m' # No Color
 
 test_passed() {
-  echo -e "${GREEN}✓${NC} $1"
+  echo -e "${GREEN}PASS${NC} $1"
   PASS=$((PASS + 1))
 }
 
 test_failed() {
-  echo -e "${RED}✗${NC} $1"
+  echo -e "${RED}FAIL${NC} $1"
   FAIL=$((FAIL + 1))
 }
 
 test_skipped() {
-  echo -e "${YELLOW}○${NC} $1"
+  echo -e "${YELLOW}SKIP${NC} $1"
 }
 
 # Test: Basic single status line (NO_COLOR)
@@ -187,13 +187,13 @@ test_verbose_compact() {
 # Test: VERBOSE mode (verbose format)
 test_verbose_extended() {
   local output
-  output="$(NO_COLOR=1 VERBOSE=1 "$BIN" <"$FIXTURES/status.json")"
+  output="$(NO_COLOR=1 "$BIN" --verbose <"$FIXTURES/status.json")"
 
   # Verbose mode SHOULD contain "Model:" prefix
   if echo "$output" | grep -q "Model:"; then
-    test_passed "Verbose format (VERBOSE=1)"
+    test_passed "Verbose format (--verbose)"
   else
-    test_failed "Verbose format (VERBOSE=1)"
+    test_failed "Verbose format (--verbose)"
     echo "  expected 'Model:' prefix"
   fi
 }

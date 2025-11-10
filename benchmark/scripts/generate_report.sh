@@ -9,7 +9,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 BENCHMARK_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 RUNS="${1:-250}"
-OUTPUT_FILE="${2:-$BENCHMARK_DIR/REPORT.md}"
+OUTPUT_FILE="${2:-$BENCHMARK_DIR/README.md}"
 TEMP_DIR=$(mktemp -d)
 TIME_OUTPUT="$TEMP_DIR/time_output.txt"
 CYCLES_OUTPUT="$TEMP_DIR/cycles_output.txt"
@@ -28,15 +28,15 @@ echo ""
 
 # Run time benchmark
 echo "Running time benchmarks..."
-JSON_OUTPUT_DIR="$JSON_OUTPUT_DIR" "$SCRIPT_DIR/bench_time.sh" "$RUNS" > "$TIME_OUTPUT" 2>&1
+JSON_OUTPUT_DIR="$JSON_OUTPUT_DIR" "$SCRIPT_DIR/bench_time.sh" "$RUNS" >"$TIME_OUTPUT" 2>&1
 
 # Run cycles benchmark
 echo "Running CPU cycles benchmarks..."
-JSON_OUTPUT_DIR="$JSON_OUTPUT_DIR" "$SCRIPT_DIR/bench_cycles.sh" "$RUNS" > "$CYCLES_OUTPUT" 2>&1
+JSON_OUTPUT_DIR="$JSON_OUTPUT_DIR" "$SCRIPT_DIR/bench_cycles.sh" "$RUNS" >"$CYCLES_OUTPUT" 2>&1
 
 # Run memory benchmark
 echo "Running memory benchmarks..."
-"$SCRIPT_DIR/bench_memory.sh" "$RUNS" > "$MEMORY_OUTPUT" 2>&1
+"$SCRIPT_DIR/bench_memory.sh" "$RUNS" >"$MEMORY_OUTPUT" 2>&1
 
 echo ""
 echo "Parsing results and generating Markdown..."
@@ -52,16 +52,16 @@ grep "Benchmarking (perf stat):" "$CYCLES_OUTPUT" | wc -l
 echo ""
 
 # Generate the markdown report
-cat "$BENCHMARK_DIR/data/heading.md" > "$OUTPUT_FILE"
-echo "" >> "$OUTPUT_FILE"
+cat "$BENCHMARK_DIR/data/heading.md" >"$OUTPUT_FILE"
+echo "" >>"$OUTPUT_FILE"
 
 # Add timestamp
-echo "**Last Updated:** $(date '+%Y-%m-%d %H:%M:%S %Z')" >> "$OUTPUT_FILE"
-echo "" >> "$OUTPUT_FILE"
+echo "**Last Updated:** $(date '+%Y-%m-%d %H:%M:%S %Z')" >>"$OUTPUT_FILE"
+echo "" >>"$OUTPUT_FILE"
 
 # Add projects list with URLs
-echo "## Implementations" >> "$OUTPUT_FILE"
-echo "" >> "$OUTPUT_FILE"
+echo "## Implementations" >>"$OUTPUT_FILE"
+echo "" >>"$OUTPUT_FILE"
 
 # Read from commands.txt and generate list
 while IFS='|' read -r name author stack url command type; do
@@ -70,23 +70,23 @@ while IFS='|' read -r name author stack url command type; do
 
     # Format as markdown list item with link to project and author in parentheses
     if [[ "$url" != "-" && -n "$url" ]]; then
-        echo "- [**$name**](https://$url) (@$author) - $stack" >> "$OUTPUT_FILE"
+        echo "- [**$name**](https://$url) (@$author) - $stack" >>"$OUTPUT_FILE"
     else
-        echo "- **$name** (@$author) - $stack" >> "$OUTPUT_FILE"
+        echo "- **$name** (@$author) - $stack" >>"$OUTPUT_FILE"
     fi
-done < "$BENCHMARK_DIR/data/commands.txt"
+done <"$BENCHMARK_DIR/data/commands.txt"
 
-echo "" >> "$OUTPUT_FILE"
+echo "" >>"$OUTPUT_FILE"
 
 # Add note about third-party tools
-echo "**Note:** Unlike the reference implementations that only process JSON from stdin, \`ccusage\` and \`ccstatusline\` also read configuration files from \`\$HOME/.claude\` and may make API calls. The performance measurements for these tools reflect their full behavior and may vary depending on your system configuration, network latency, and Claude API response times." >> "$OUTPUT_FILE"
-echo "" >> "$OUTPUT_FILE"
+echo "**Note:** Unlike the reference implementations \`mini-ccstatus\` that only process JSON from stdin, \`mini-ccstatus --all\`, \`ccusage\` and \`ccstatusline\` also read configuration files from \`\$HOME/.claude\`." >>"$OUTPUT_FILE"
+echo "" >>"$OUTPUT_FILE"
 
 # Parse time benchmark results
-echo "## Execution Time" >> "$OUTPUT_FILE"
-echo "" >> "$OUTPUT_FILE"
-echo "| Implementation | Author | Stack | Avg | Min | Max | vs Baseline (Avg) |" >> "$OUTPUT_FILE"
-echo "|----------------|--------|-------|-----|-----|-----|-------------------|" >> "$OUTPUT_FILE"
+echo "## Execution Time" >>"$OUTPUT_FILE"
+echo "" >>"$OUTPUT_FILE"
+echo "| Implementation | Author | Stack | Avg | Min | Max | vs Baseline (Avg) |" >>"$OUTPUT_FILE"
+echo "|----------------|--------|-------|-----|-----|-----|-------------------|" >>"$OUTPUT_FILE"
 
 # Extract hyperfine results - parse JSON files with jq
 # First pass: collect all results and find baseline
@@ -115,12 +115,12 @@ while IFS='|' read -r name author stack url command type; do
     results+=("$name|$author|$stack|$url|$mean_s|$min_s|$max_s")
 
     bench_index=$((bench_index + 1))
-done < "$BENCHMARK_DIR/data/commands.txt"
+done <"$BENCHMARK_DIR/data/commands.txt"
 
 # Second pass: format output with baseline comparison
 first_time_entry=true
 for result in "${results[@]}"; do
-    IFS='|' read -r name author stack url mean_s min_s max_s <<< "$result"
+    IFS='|' read -r name author stack url mean_s min_s max_s <<<"$result"
 
     # Format times with appropriate units (hyperfine outputs in seconds as float)
     mean_formatted=$(awk -v val="$mean_s" 'BEGIN {
@@ -164,16 +164,16 @@ for result in "${results[@]}"; do
         name_formatted="$name"
     fi
 
-    echo "| $name_formatted | $author | $stack | $mean_formatted | $min_formatted | $max_formatted | $relative |" >> "$OUTPUT_FILE"
+    echo "| $name_formatted | $author | $stack | $mean_formatted | $min_formatted | $max_formatted | $relative |" >>"$OUTPUT_FILE"
 done
 
-echo "" >> "$OUTPUT_FILE"
+echo "" >>"$OUTPUT_FILE"
 
 # Parse CPU cycles benchmark results
-echo "## CPU Cycles" >> "$OUTPUT_FILE"
-echo "" >> "$OUTPUT_FILE"
-echo "| Implementation | Author | Stack | Cycles | Instructions | IPC | Cache Miss Rate | vs Baseline (Cycles) |" >> "$OUTPUT_FILE"
-echo "|----------------|--------|-------|--------|--------------|-----|-----------------|----------------------|" >> "$OUTPUT_FILE"
+echo "## CPU Cycles" >>"$OUTPUT_FILE"
+echo "" >>"$OUTPUT_FILE"
+echo "| Implementation | Author | Stack | Cycles | Instructions | IPC | Cache Miss Rate | vs Baseline (Cycles) |" >>"$OUTPUT_FILE"
+echo "|----------------|--------|-------|--------|--------------|-----|-----------------|----------------------|" >>"$OUTPUT_FILE"
 
 # Extract cycles results from JSON files
 bench_index=0
@@ -202,12 +202,12 @@ while IFS='|' read -r name author stack url command type; do
     cycles_results+=("$name|$author|$stack|$url|$cycles|$instructions|$ipc|$cache_miss_rate")
 
     bench_index=$((bench_index + 1))
-done < "$BENCHMARK_DIR/data/commands.txt"
+done <"$BENCHMARK_DIR/data/commands.txt"
 
 # Second pass: format output with baseline comparison
 first_cycle_entry=true
 for result in "${cycles_results[@]}"; do
-    IFS='|' read -r name author stack url cycles instructions ipc cache_miss_rate <<< "$result"
+    IFS='|' read -r name author stack url cycles instructions ipc cache_miss_rate <<<"$result"
 
     # Format cycles with thousands separator
     cycles_formatted=$(printf "%'d" "$cycles" 2>/dev/null || echo "$cycles")
@@ -238,16 +238,16 @@ for result in "${cycles_results[@]}"; do
         name_formatted="$name"
     fi
 
-    echo "| $name_formatted | $author | $stack | $cycles_formatted | $instructions_formatted | $ipc | $cache_miss_rate | $relative |" >> "$OUTPUT_FILE"
+    echo "| $name_formatted | $author | $stack | $cycles_formatted | $instructions_formatted | $ipc | $cache_miss_rate | $relative |" >>"$OUTPUT_FILE"
 done
 
-echo "" >> "$OUTPUT_FILE"
+echo "" >>"$OUTPUT_FILE"
 
 # Parse memory benchmark results
-echo "## Memory Usage" >> "$OUTPUT_FILE"
-echo "" >> "$OUTPUT_FILE"
-echo "| Implementation | Author | Stack | Avg KB | Avg MB | vs Baseline |" >> "$OUTPUT_FILE"
-echo "|----------------|--------|-------|--------|--------|-------------|" >> "$OUTPUT_FILE"
+echo "## Memory Usage" >>"$OUTPUT_FILE"
+echo "" >>"$OUTPUT_FILE"
+echo "| Implementation | Author | Stack | Avg KB | Avg MB | vs Baseline |" >>"$OUTPUT_FILE"
+echo "|----------------|--------|-------|--------|--------|-------------|" >>"$OUTPUT_FILE"
 
 # Extract memory results
 awk '
@@ -338,59 +338,59 @@ function format_ratio(current, baseline) {
         printf "| %s | %s | %s | %s | %s | %s |\n", impl_formatted, author, stack, kb, mb, relative
     }
 }
-' "$MEMORY_OUTPUT" >> "$OUTPUT_FILE"
+' "$MEMORY_OUTPUT" >>"$OUTPUT_FILE"
 
-echo "" >> "$OUTPUT_FILE"
+echo "" >>"$OUTPUT_FILE"
 
 # Add benchmark configuration
-echo "## Configuration" >> "$OUTPUT_FILE"
-echo "" >> "$OUTPUT_FILE"
-echo "- **Time Benchmark:** $(grep -oP 'warmup=\d+, runs=\d+' "$TIME_OUTPUT")" >> "$OUTPUT_FILE"
-echo "- **CPU Cycles Benchmark:** $(grep -oP 'runs=\d+' "$CYCLES_OUTPUT")" >> "$OUTPUT_FILE"
-echo "- **Memory Benchmark:** $(grep -oP 'runs=\d+' "$MEMORY_OUTPUT")" >> "$OUTPUT_FILE"
-echo "- **System:** $(uname -s) $(uname -r)" >> "$OUTPUT_FILE"
-echo "- **CPU:** $(grep "model name" /proc/cpuinfo | head -1 | cut -d: -f2 | xargs)" >> "$OUTPUT_FILE"
-echo "" >> "$OUTPUT_FILE"
+echo "## Configuration" >>"$OUTPUT_FILE"
+echo "" >>"$OUTPUT_FILE"
+echo "- **Time Benchmark:** $(grep -oP 'warmup=\d+, runs=\d+' "$TIME_OUTPUT")" >>"$OUTPUT_FILE"
+echo "- **CPU Cycles Benchmark:** $(grep -oP 'runs=\d+' "$CYCLES_OUTPUT")" >>"$OUTPUT_FILE"
+echo "- **Memory Benchmark:** $(grep -oP 'runs=\d+' "$MEMORY_OUTPUT")" >>"$OUTPUT_FILE"
+echo "- **System:** $(uname -s) $(uname -r)" >>"$OUTPUT_FILE"
+echo "- **CPU:** $(grep "model name" /proc/cpuinfo | head -1 | cut -d: -f2 | xargs)" >>"$OUTPUT_FILE"
+echo "" >>"$OUTPUT_FILE"
 
 # Add runtime versions
-echo "### Runtime Versions" >> "$OUTPUT_FILE"
-echo "" >> "$OUTPUT_FILE"
+echo "### Runtime Versions" >>"$OUTPUT_FILE"
+echo "" >>"$OUTPUT_FILE"
 
 # C compiler
-if command -v cc &> /dev/null; then
+if command -v cc &>/dev/null; then
     CC_VERSION=$(cc --version 2>/dev/null | head -1 || echo "unknown")
-    echo "- **C Compiler:** $CC_VERSION" >> "$OUTPUT_FILE"
+    echo "- **C Compiler:** $CC_VERSION" >>"$OUTPUT_FILE"
 fi
 
 # Python
-if command -v python3 &> /dev/null; then
+if command -v python3 &>/dev/null; then
     PYTHON_VERSION=$(python3 --version 2>&1 | cut -d' ' -f2)
-    echo "- **Python:** $PYTHON_VERSION" >> "$OUTPUT_FILE"
+    echo "- **Python:** $PYTHON_VERSION" >>"$OUTPUT_FILE"
 fi
 
 # Node.js
-if command -v node &> /dev/null; then
+if command -v node &>/dev/null; then
     NODE_VERSION=$(node --version | sed 's/^v//')
-    echo "- **Node.js:** $NODE_VERSION" >> "$OUTPUT_FILE"
+    echo "- **Node.js:** $NODE_VERSION" >>"$OUTPUT_FILE"
 fi
 
 # Bash
-if command -v bash &> /dev/null; then
+if command -v bash &>/dev/null; then
     BASH_VERSION=$(bash --version | head -1 | grep -oP '\d+\.\d+\.\d+')
-    echo "- **Bash:** $BASH_VERSION" >> "$OUTPUT_FILE"
+    echo "- **Bash:** $BASH_VERSION" >>"$OUTPUT_FILE"
 fi
 
 # jq
-if command -v jq &> /dev/null; then
+if command -v jq &>/dev/null; then
     JQ_VERSION=$(jq --version | sed 's/jq-//')
-    echo "- **jq:** $JQ_VERSION" >> "$OUTPUT_FILE"
+    echo "- **jq:** $JQ_VERSION" >>"$OUTPUT_FILE"
 fi
 
-echo "" >> "$OUTPUT_FILE"
+echo "" >>"$OUTPUT_FILE"
 
 # Add notes
-cat "$BENCHMARK_DIR/data/notes.md" >> "$OUTPUT_FILE"
-echo "" >> "$OUTPUT_FILE"
+cat "$BENCHMARK_DIR/data/notes.md" >>"$OUTPUT_FILE"
+echo "" >>"$OUTPUT_FILE"
 
 echo ""
 echo "✓ Report generated: $OUTPUT_FILE"

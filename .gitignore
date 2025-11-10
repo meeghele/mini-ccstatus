@@ -1,4 +1,7 @@
-obj/
-obj-debug/
 bin/
+obj/
+log/
 benchmark/REPORT.md
+compile_commands.json
+.cache/
+tests/test_token_calculator

@@ -36,14 +36,36 @@ jobs:
         fi
         echo "All dependencies installed successfully"
 
-    - name: build project
+    - name: build default target
       shell: sh
       run: |
-        echo "Building project..."
+        echo "Building default target..."
         make default
-        echo "✅ Build completed successfully"
+        echo "✅ Default build completed successfully"
 
-    - name: run tests
+    - name: clean project
+      shell: sh
+      run: |
+        echo "Testing clean target..."
+        make clean
+        echo "✅ Clean completed successfully"
+
+    - name: build all targets (release, debug, debug-log)
+      shell: sh
+      run: |
+        echo "Building all targets..."
+        make build-all
+        echo "✅ All targets built successfully"
+        ls -la bin/
+
+    - name: run demo scenarios
+      shell: sh
+      run: |
+        echo "Running all demo scenarios..."
+        make demo-all
+        echo "✅ All demos completed successfully"
+
+    - name: run unit and coverage tests
       shell: sh
       run: |
         echo "Running tests..."
@@ -57,17 +79,10 @@ jobs:
         make valgrind
         echo "✅ Valgrind tests completed - no memory leaks detected"
 
-    - name: clean build
+    - name: full build cycle (make all)
       shell: sh
       run: |
-        echo "Testing clean target..."
-        make clean
-        echo "✅ Clean completed successfully"
-
-    - name: full build cycle
-      shell: sh
-      run: |
-        echo "Running full build cycle (clean, build, test)..."
+        echo "Running full build cycle (clean, build-all, demo-all, test, valgrind)..."
         make all
         echo "✅ Full build cycle completed successfully"
 

@@ -1,0 +1,6 @@
+{"type":"request","message":{"role":"user","content":"Hello"},"timestamp":"2025-01-15T10:00:00Z"}
+{"type":"response","message":{"role":"assistant","content":"Hi there!","usage":{"input_tokens":1000,"output_tokens":500,"cache_creation_input_tokens":2000,"cache_read_input_tokens":300}},"timestamp":"2025-01-15T10:00:01Z"}
+{"type":"request","message":{"role":"user","content":"How are you?"},"timestamp":"2025-01-15T10:01:00Z"}
+{"type":"response","message":{"role":"assistant","content":"I'm doing well!","usage":{"input_tokens":1500,"output_tokens":600,"cache_creation_input_tokens":1000,"cache_read_input_tokens":400}},"timestamp":"2025-01-15T10:01:01Z"}
+{"type":"request","message":{"role":"user","content":"Tell me more"},"timestamp":"2025-01-15T10:02:00Z"}
+{"type":"response","message":{"role":"assistant","content":"Sure, here's more information...","usage":{"input_tokens":2000,"output_tokens":800,"cache_creation_input_tokens":500,"cache_read_input_tokens":100}},"timestamp":"2025-01-15T10:02:01Z"}

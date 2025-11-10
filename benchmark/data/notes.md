@@ -6,6 +6,7 @@ Required tools (Fedora):
 
 ```bash
 sudo dnf install hyperfine time jq python3 nodejs perf
+npm install -g ccusage ccstatusline
 ```
 
 #### Note

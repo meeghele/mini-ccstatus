@@ -19,9 +19,6 @@ export NODE
 .PHONY: default
 default: time cycles memory
 
-.PHONY: all
-all: default
-
 .PHONY: results
 results: generate_report
 

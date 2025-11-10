@@ -22,12 +22,12 @@ YELLOW='\033[0;33m'
 NC='\033[0m' # No Color
 
 test_passed() {
-  echo -e "${GREEN}✓${NC} $1"
+  echo -e "${GREEN}PASS${NC} $1"
   PASS=$((PASS + 1))
 }
 
 test_failed() {
-  echo -e "${RED}✗${NC} $1"
+  echo -e "${RED}FAIL${NC} $1"
   FAIL=$((FAIL + 1))
 }
 
