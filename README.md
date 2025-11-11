@@ -5,11 +5,46 @@
 
 # mini-ccstatus
 
-A fast/minimal C implementation of the statusline for Claude Code CLI for Linux (tested on Debian/Ubuntu and Fedora).
+A fast/minimal C implementation of the statusline for Claude Code CLI for Linux (tested on Debian/Ubuntu and Fedora). 
 
-## Quick Start
 
-### Installation
+<img src="images/mini-ccstatus_main.png" width="100%" alt="mini-ccstatus">
+
+## Features
+
+See [`images/`](images/) for an animated demo.
+
+### Lightning Fast ⚡
+- **< 5ms response time** - Instant status updates with zero lag
+- **~ 700x faster on average than other statuslines** - See [`benchmark/`](benchmark/) for more details
+- **Single-pass parsing** - Processes transcripts without loading entire files into memory
+- **Smart caching** - Session-aware cache with file-size change detection
+
+### Rock Solid 🛡️
+- **Zero crashes** - Rust-inspired error rail pattern prevents silent failures
+- **Memory safe** - Overflow-checked arithmetic and bounds validation on all operations
+- **Concurrent safe** - Advisory file locking prevents corruption in multi-process scenarios
+- **No memory leaks** - RAII-like patterns ensure all resources are cleaned up
+
+### Minimal Footprint 📦
+- **Single binary** - No runtime dependencies, just copy and run
+- **< 100KB executable** - Smaller than most shell scripts
+- **Fixed memory usage** - No unbounded allocations or memory bloat
+- **C11 standard** - Portable across all Linux distributions
+
+### Smart Features 🧠
+- **Context awareness** - Tracks both session and context window token usage
+- **Visual progress bars** - Dual-color bars for input/output token/lines/API ratios
+- **Cache efficiency metrics** - Monitor internal and API cache hit rates and performance
+- **Compact visualization** - Progress bars appear only when real data is available
+
+## Rationale
+
+mini-ccstatus started while working on a project that runs multiple Claude Code instances in parallel for implementing unit, integration, and E2E tests across a complex, heavily algorithmic Go/TypeScript/Python codebase with ML/statistical components. These sessions stay alive for long stretches, so we want to monitor the internals with all the detail Anthropic currently exposes.
+
+Other statusline implementations hammer the CPU, RAM, and batteries on our laptops, so - half as a joke - I wrote mini-ccstatus in C after benchmarking the alternatives; see [`benchmark/`](benchmark/) for the data.
+
+## Installation
 
 *Prerequisites*:
 
@@ -29,11 +64,16 @@ cd mini-ccstatus
 make
 ```
 
-### Demo
+## Demo
 
 ```bash
 make demo-all
 ```
+
+## Dependencies
+
+- [**cJSON**](https://github.com/DaveGamble/cJSON) - Lightweight JSON parser (MIT License, vendored in `lib/cjson/`)
+- **Standard C Library** - No other external dependencies
 
 ## Command Line Options
 
@@ -70,6 +110,8 @@ Examples:
 
 ## Display Modes
 
+### Statusline and labels
+
 mini-ccstatus supports several display modes:
 
 - **Default**: Compact view
@@ -77,11 +119,27 @@ mini-ccstatus supports several display modes:
 - **Verbose** (`--verbose` / `-v`): Compact with field labels
 - **All Features** (`--all` / `-a`): All metrics including token breakdown
 
-## Token Tracking
+### Token Tracking
 
 - **Total tokens** = inputTokens + outputTokens + cacheCreationTokens + cacheReadTokens
 - **Context tokens** = tokens from last assistant message (input + cache creation + cache read)
 - **Session tokens** = sum of all tokens across entire session
+
+### Display Options
+
+Individual display options can be combined to customize your statusline:
+
+- **`-d, --token-breakdown`**: Shows detailed token breakdown by category (input, output, cache write, cache read) on a separate line
+- **`-c, --context-tokens`**: Displays current context window usage as a percentage of the 200K token limit with a progress bar
+- **`-t, --session-tokens`**: Shows cumulative token usage across the entire session as a percentage of the 200K limit
+- **`-e, --cache-efficiency`**: Displays the ratio of the `mini-ccstatus` cache read tokens to total cache tokens (higher = better cache reuse)
+- **`-p, --api-time-ratio`**: Shows percentage of session time spent waiting for API responses
+- **`-l, --lines-ratio`**: Displays proportion of lines added vs removed with a dual-color progress bar
+- **`-i, --input-output-ratio`**: Shows the proportion of input tokens vs output tokens with a dual-color progress bar
+- **`-w, --cache-write-read-ratio`**: Displays proportion of cache write tokens vs cache read tokens
+- **`-C, --clamping`**: Clamps percentage displays to 100% maximum (useful when usage exceeds context limits)
+- **`-v, --verbose`**: Adds descriptive field labels to all metrics for better readability
+- **`-H, --hide-breakdown`**: Suppresses the token breakdown line even when other token options are enabled
 
 ## Building & Testing
 
@@ -115,31 +173,10 @@ See [`benchmark/`](benchmark/) for performance comparison against other Claude C
 - Anthropic's reference examples (Bash, Python, Node.js)
 - Community implementations
 
-### Dependencies
-
-- [**cJSON**](https://github.com/DaveGamble/cJSON) - Lightweight JSON parser (MIT License, vendored in `lib/cjson/`)
-- **Standard C Library** - No other external dependencies
 
 ### Configure Claude Code
 
 Add to your `~/.claude/settings.json`:
-
-```json
-{
-  "statusLine": {
-    "type": "command",
-    "command": "/path/to/mini-ccstatus/bin/mini-ccstatus",
-    "padding": 0
-  }
-}
-```
-
-## Screenshots
-
-
-### All
-
-![mini-ccstatus all](images/mini-ccstatus_all.png)
 
 ```json
 {
@@ -151,37 +188,17 @@ Add to your `~/.claude/settings.json`:
 }
 ```
 
-### Custom
-
-![mini-ccstatus custom](images/mini-ccstatus_custom.png)
+While the above `command` will display everything, the one below is a more sensible one I am currently using:
 
 ```json
 {
   "statusLine": {
     "type": "command",
-    "command": "/path/to/mini-ccstatus/bin/mini-ccstatus --simple --context-tokens --session-tokens --api-time-ratio --input-output-ratio",
+    "command": "/path/to/mini-ccstatus/bin/mini-ccstatus --simple --context-tokens --session-tokens --api-time-ratio --lines-ratio --input-output-ratio",
     "padding": 0
   }
 }
 ```
-
-### Default
-
-![mini-ccstatus default](images/mini-ccstatus_default.png)
-
-```json
-{
-  "statusLine": {
-    "type": "command",
-    "command": "/path/to/mini-ccstatus/bin/mini-ccstatus",
-    "padding": 0
-  }
-}
-```
-
-### Demo
-
-See [`images/`](images/) for an animated demo.
 
 ## Contributing
 
