@@ -16,7 +16,7 @@ See [`images/`](images/) for an animated demo.
 
 ### Lightning Fast ⚡
 - **< 5ms response time** - Instant status updates with zero lag
-- **~ 700x faster on average than other statuslines** - See [`benchmark/`](benchmark/) for more details
+- **\~ 700x faster on average than other statuslines** - See [`benchmark/`](benchmark/) for more details
 - **Single-pass parsing** - Processes transcripts without loading entire files into memory
 - **Smart caching** - Session-aware cache with file-size change detection
 
